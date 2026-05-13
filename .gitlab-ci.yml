@@ -1,0 +1,53 @@
+#
+# OpenCreative+ Gitlab Deploy CI Job
+# McChicken Studio 2017-2026.
+#
+
+#
+# This file is responsible for deploying .jar artifact
+# on Gitlab package registry, so it makes possible (our catchphrase!)
+# to download OpenCreative+ builds without waiting of
+# publication by contributors.
+# https://gitlab.com/eagles-creative/opencreative/-/packages
+#
+# Also, it creates Javadocs and uploads it into the web,
+# so you can see all available methods on the site.
+#
+
+image: maven:latest
+
+stages:
+  - deploy
+
+deploy_job:
+  stage: deploy
+  script:
+    - echo "Compiling OpenCreative+ Build ${CI_PIPELINE_IID}, please wait..."
+    - mvn versions:set -DnewVersion=6.0.0-build-${CI_PIPELINE_IID}
+    - mvn deploy -s settings.xml
+    - echo "Compiled OpenCreative+ Build ${CI_PIPELINE_IID}! :)"
+  only:
+    refs:
+      - main
+    changes:
+      # It deploys only in Main branch, when source files or pom.xml are changed.
+      - src/**/*
+      - pom.xml
+      - .gitlab-ci.yml
+pages:
+  stage: deploy
+  script:
+    - echo "Creating Javadocs for OpenCreative+, please wait..."
+    - mvn javadoc:javadoc -Dmaven.javadoc.failOnError=false
+    - mkdir -p public
+    - if [ -d target/site/apidocs ]; then cp -r target/site/apidocs/* public && echo "Javadocs was created successfully :)"; else echo "No Javadocs was generated... :("; fi
+  artifacts:
+    paths:
+      - public
+  only:
+    refs:
+      - main
+    changes:
+      # It creates Javadocs only in Main branch, when source files are changed.
+      - src/**/*
+      - .gitlab-ci.yml

@@ -1,0 +1,1101 @@
+#
+# OpenCreative+ 6.0.0 - Well, it's possible.
+# (C) McChicken Studio 2017-2026.
+#
+
+#
+# This plugin allows players to create their worlds,
+# where they can build, play and even make a code.
+#
+
+#
+# Commands:
+#
+#  /spawn - Teleports to spawn world.
+#  /locate [Player] - Displays world info, where specified player currently plays.
+#  /join [ID] - Connects player to world with specified ID.
+#  /jointo [Player] - Connects player to the world, where specified player currently plays.
+#  /games - Opens worlds browser.
+#  /cc    - Sends message to creative (global) chat for all players.
+#    /cc off - Turns off creative chat for player.
+#    /cc on  - Turns on creative chat for player.
+#
+#  /world - Opens world's settings or displays world's info
+#    /world info - Displays world's info.
+#    /world delete - Deletes world.
+#    /world deletemobs - Removes mobs.
+#    /world kick [Player] - Kicks player from world.
+#    /world ban [Player] - Bans player in world.
+#    /world unban [Player] - Unbans player in world.
+#    /world whitelist [Player] - Allows player to visit world, if it's closed.
+#    /world unwhitelist [Player] - Removes player from whitelist.
+#    /world size - Displays size of world folder.                   (opencreative.world.size)
+#    /world platformer [ID] - Changes coding platforms generator.   (opencreative.world.set-platformer)
+#
+#  /ad - Advertises world in chat for all players.
+#  /build - Changes world's mode to Build, disables PvP,
+#           and gives Creative mode to world owner and builders.
+#  /play  - Changes world's mode to Play, enables PvP out of spawn area,
+#           and executes code made in developer mode.
+#  /dev   - Connects player to developer world, where he can create
+#           a code for world, that will be executed in Play mode.
+#  /environment - Opens environment settings. (for world owners, world developers)
+#    /env vars list - Displays list of variables.
+#    /env vars size - Displays total amount of variables.
+#    /env debug - Debug mode of code.
+#    /env barrel - Toggles chests or barrels in dev world.
+#    /env event [Material] - Changes material for event section in dev world.
+#    /env action [Material] - Changes material for action section in dev world.
+#    /env floor [Material] - Changes material for floor in dev world.
+#  /like - Changes world's reputation by +1
+#  /dislike - Changes world's reputation by -1
+#
+#  /give [Player] [Material] [Amount] - Gives item.               (for world owners, world developers or builders) (opencreative.give.bypass)
+#  /tp [Player] (player) - Teleports to player.                   (for world owners, world developers or builders) (opencreative.teleport.bypass, opencreative.teleport.clear-bypass, opencreative.teleport.others-bypass)
+#  /gamemode [Gamemode] (player) - Changes player's gamemode.     (for world owners, world developers or builders) (opencreative.game-mode.bypass)
+#  /playsound [Player] [Sound] [Volume] [Pitch] - Plays a sound.  (for world owners, world developers or builders) (opencreative.play-sound.bypass)
+#  /time set [Time] - Changes world's time.                       (for world owners, world developers or builders) (opencreative.time.bypass)
+#  /weather [Sun/Storm] - Changes world's weather.                (for world owners, world developers or builders) (opencreative.weather.bypass)
+#  /stopsound [Player] - Stops sounds.                            (for world owners, world developers or builders) (opencreative.stop-sound.bypass)
+#
+#  /creative - Opens menu of plugin info.                                                   Permission nodes
+#    /creative setspawn - Sets new spawn location in lobby world.                           (opencreative.setspawn)
+#    /creative reload - Reloads config.                                                     (opencreative.reload)
+#    /creative resetlocale - Removes current localization files and replaces with default.  (opencreative.resetlocale)
+#    /creative ignoremessage [Path] - Saves message from resetting locale in the future.    (opencreative.resetlocale.add-ignored)
+#    /creative unignoremessage [Path] - Makes message possible to be reset in the future.   (opencreative.resetlocale.remove-ignored)
+#    /creative print [Path] - Prints message content from localization file to player.      (opencreative.print)
+#    /creative list - Displays list of loaded worlds.                                       (opencreative.list.loaded)
+#              list [Player] - Displays list of worlds made by player.                      (opencreative.list.players)
+#    /creative created - Displays amount of all created worlds on server.                   (opencreative.list.all)
+#    /creative deprecated - Displays list of old worlds, which have owner,
+#                           that last joined server 1 month ago.                            (opencreative.list.deprecated)
+#    /creative corrupted - Displays list of worlds, that lost settings.yml.                 (opencreative.list.corrupted)
+#    /creative moderate [ID] - Opens moderation menu with admin tools for specified world.  (opencreative.moderation.menu)
+#    /creative info [ID] - Displays world's info.                                           (opencreative.world.info)
+#    /creative load [ID] - Loads specified world.                                           (opencreative.world.load)
+#    /creative unload [ID] - Unloads specified world.                                       (opencreative.world.unload)
+#              unload all - Unloads all worlds.                                             (opencreative.world.unload.all)
+#    /creative register [ID] - Adds not registered world to worlds browser.                 (opencreative.world.register)
+#    /creative unregister [ID] - Removes world from worlds browser, until restart.          (opencreative.world.unregister)
+#    /creative recommend [ID] - Adds world to recommended worlds (/worlds).                 (opencreative.world.recommend)
+#    /creative unrecommend [ID] - Removes world from recommended worlds (/worlds).          (opencreative.world.unrecommend)
+#    /creative setowner [ID] [player] - Sets new owner of world.                            (opencreative.world.setowner)
+#    /creative setsize [ID] [size] - Sets custom size of world. (0 to reset)                (opencreative.world.setsize)
+#    /creative maintenance start [Seconds] - Unloads worlds and starts maintenance mode.    (opencreative.maintenance)
+#              maintenance end - Ends maintenance mode.                                     (opencreative.maintenance)
+#              maintenance restart - Broadcasts about shutdown and shutdowns the server.    (opencreative.maintenance)
+#              maintenance restart end - Ends maintenance and shutdowns the server.         (opencreative.maintenance)
+#    /creative creative-chat - Creative Chat settings (on, off, clear)                      (opencreative.creative-chat)
+#    /creative items get [Kit] - Gives all items from kit.                                  (opencreative.items.get-kit)
+#              items get [Kit] [Slot] - Gives item by slot from kit.                        (opencreative.items.get-slot)
+#              items set [Kit] [Slot] - Sets item by slot in kit to item in main hand.      (opencreative.items.set)
+#              items set [Kit] [Slot] [Type] - Sets item by slot in kit to system item.     (opencreative.items.set)
+#              items reset [Kit] - Resets items kit to default.                             (opencreative.items.reset)
+#    /creative item [Type] - Gives system item.                                             (opencreative.items.get)
+#    /creative groups info [group] - Prints information about player group.                 (opencreative.groups.info)
+#              groups edit [group] [limit/modifier] [type] [value] - Edits group's limits.  (opencreative.groups.edit)
+#              groups remove [group] - Deletes group.                                       (opencreative.groups.remove)
+#    /creative sounds [theme] - Sets current sounds theme.                                  (opencreative.sounds.theme)
+#    /creative sound [sound] - Plays specified sound.                                       (opencreative.sounds.play)
+#    /creative template [folder] - Creates a new world from Minecraft                       (opencreative.template)
+#                                  save in plugins/OpenCreative/templates
+#    /creative update - Check if new version is available                                   (opencreative.updates.check)
+#    /creative fireworks [times] [delay in seconds] - Summons fireworks for all players.    (opencreative.fireworks)
+#    /creative spy [on/off] - Enables or disables seeing messages from other worlds.        (opencreative.spy)
+#    /creative updateicons - Updates all planets and modules icons.                         (opencreative.update-icons)
+#    /creative experiments list - Shows a list of all experimental not stable features      (opencreative.experiments.list)
+#    /creative experiments enable [id] - Enables an experiment                              (opencreative.experiments.enable)
+#    /creative experiments disable [id] - Disables an experiment                            (opencreative.experiments.disable)
+#    /creative experiments [id] - Use specified experiment command                          (opencreative.experiments.use,
+#                                                                                            opencreative.experiments.[experiment id])
+#
+# Permissions:
+#
+#  Permissions for admin commands are written above.
+#
+#  opencreative.maintenance.bypass - Bypass maintenance restrictions to join the worlds.
+#  opencreative.stability.bypass - Bypass stability restrictions to join the worlds.
+#  opencreative.world.private.bypass - Allows player to join world, even if it's closed.
+#  opencreative.world.kick.bypass - Prevents admin from kicking from world.
+#  opencreative.world.ban.bypass - Prevents admin from banning in world.
+#  opencreative.world.banned.bypass - Allows player to join world, even if he's banned.
+#  opencreative.lobby.placing-blocks - Ability to place blocks, paintings, item frames in lobby.
+#  opencreative.lobby.destroying-blocks - Ability to destroy blocks, paintings, item frames in lobby.
+#  opencreative.lobby.spawning-mobs - Ability to spawn mobs in lobby.
+#  opencreative.lobby.damaging-mobs - Ability to damage mobs in lobby.
+#  opencreative.creative-chat.bypass - Allows player to use creative chat, even if it's disabled.
+#  opencreative.join.others - Ability to move specified player to specified world (/join [ID] [Player]).
+#  opencreative.join-to.others - Ability to move first specified player to second (/jointo [First Player] [Second Player]).
+#  opencreative.moderation.clear-name - Ability to clear world's display name in moderation menu.
+#  opencreative.moderation.clear-description - Ability to clear world's description in moderation menu.
+#  opencreative.moderation.clear-id - Ability to reset world's custom ID in moderation menu.
+#  opencreative.moderation.clear-icon - Ability to reset world's icon in moderation menu.
+#  opencreative.moderation.connect-silent - Ability to connect the world without join message.
+#  opencreative.moderation.connect-dev-silent - Ability to connect the developers world without join message.
+#  opencreative.moderation.close-world - Ability to close world.
+#
+version: 6.0.0
+
+#
+# Powered by Paper API.
+# Licensed under GNU GPL v3.
+# Additional features by: Vault, ProtocolLib, PlaceholderAPI, LibsDisguises.
+#
+# Discord: https://discord.gg/sSFCXUeq63
+# Wiki: https://gitlab.com/eagles-creative/opencreative/-/wikis/home
+#
+# History: https://creative-plus-en.fandom.com/wiki/OpenCreative+
+# Source code: https://gitlab.com/eagles-creative/opencreative
+#
+# Hangar: https://hangar.papermc.io/mcchickenstudio/OpenCreative
+#
+hide-from-tab: spectator # Hides players, that aren't in same world: spectator - Transparent nickname (requires ProtocolLib), full - Full hide from tab list, none - Not hide.
+
+#
+# Lobby is a world, where player teleports on server join,
+# on commands usage: /spawn, /lobby, /hub, and when player
+# is banned or kicked from someone's world.
+#
+# To change spawn location of world, use:
+# /oc setspawn
+#
+lobby:
+  # Name of existing world for lobby to teleport player.
+  world: "world"
+
+  # Disallows placing blocks in lobby, if player doesn't have permission: opencreative.lobby.placing-blocks.bypass
+  #
+  # true - yes, disallow it.
+  # false - no, allow it.
+  disallow-placing-blocks: true
+
+  # Disallows destroying blocks in lobby, if player doesn't have permission: opencreative.lobby.destroying-blocks.bypass
+  disallow-destroying-blocks: true
+
+  # Disallows spawning mobs in lobby, if player doesn't have permission: opencreative.lobby.spawning-mobs.bypass
+  disallow-spawning-mobs: true
+
+  # Disallows damaging mobs in lobby, if player doesn't have permission: opencreative.lobby.damaging-mobs.bypass
+  disallow-damaging-mobs: true
+
+  # Disallows using WorldEdit in lobby, if player doesn't have permission: opencreative.lobby.world-edit.bypass
+  disallow-world-edit: true
+
+  # Disables any explosion (from creeper or TNT) in lobby.
+  disable-explosions: true
+
+  # Clears inventory when player moves between worlds.
+  #
+  # Recommended value: "all", it clears player's inventory, when they
+  # change any world, to prevent from getting valuable items (diamonds),
+  # or bad items (TNT) in other worlds.
+  #
+  # all - all worlds
+  # creative - only planets and lobby world
+  # planets - only planets
+  # lobby - only lobby
+  # none - disable clearing inventory (not safe!)
+  clear-inventory: "all"
+
+  # Resets player's game mode to adventure when they move between worlds.
+  #
+  # Recommended value: "all", it sets player's game mode to adventure, when they
+  # change any world, to prevent from flying and getting bad items.
+  #
+  # all - all worlds
+  # creative - only planets and lobby world
+  # planets - only planets
+  # lobby - only lobby
+  # none - disable resetting game mode (not safe!)
+  reset-gamemode: "all"
+
+  # Resets player's view and simulation distance when they move between worlds.
+  #
+  # If chunks in worlds are not visible, set to: false
+  # It will disable "Set View Distance" and "Set Simulation Distance" player actions.
+  reset-view-distance: true
+
+  # Resets player's resource pack when they move between worlds.
+  #
+  # If you have resource pack changer plugin (ItemsAdder, Oraxen, Nexo...)
+  # and their resource pack breaks, set to: false
+  # It will disable "Set Resource Pack" player action.
+  reset-resource-pack: true
+
+  # Teleports player to lobby, when they join the server.
+  teleport-on-join: true
+
+  #spawn: # You can set spawn location with /oc setspawn command.
+  #  x: 1
+  #  y: 60
+  #  z: 3
+  #  yaw: 20   # Horizontal camera rotation
+  #  pitch: 25 # Vertical camera rotation
+
+#
+# Economy is used for:
+# - giving money reward on /like to world's owner
+# - giving money when player buys item to world's owner
+# - taking money when player buys from buyer.
+#
+# Vault plugin is required!
+# Get it on: https://www.spigotmc.org/resources/vault.34315/
+
+# To check balance and give money to players, you can use EssentialsX:
+# Get it on: https://essentialsx.net/downloads
+#
+economy:
+  # Type of economy: vault, none.
+  type: auto
+
+#
+# List of recommended worlds in /games menu.
+# These worlds are featured by server owners.
+#
+# To add world to recommendations, use:
+# /oc recommend ID
+#
+# To remove world from recommendations, use:
+# /oc unrecommend ID
+#
+recommended-worlds:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+
+#
+# We support customizing all plugin's messages.
+# Check /locales/ folder to see all translation files.
+#
+# To fully reset localization files, use:
+# /oc resetlocale
+#
+messages:
+  # Supported: en, ru, ua
+  #
+  #   For english language - en
+  #   Для русского языка - ru
+  #   Для української мови - ua
+  #
+  locale: en
+
+  # Branding is displayed in lobby title and lobby message.
+  # Branding uses MiniMessage (https://webui.advntr.dev/)!
+  branding: "<white>Open<gradient:#dbdbdb:#A3E2FF>Creative</gradient><color:#74D3FF>+"
+
+  # Prefix, that will be used in many messages.
+  prefix: "&6 Worlds &8| &f"
+
+  # Information about plugin, that will be displayed on /oc command.
+  version: "&f \n &fPowered by Open&7Creative&b+ &3%version%\n &f%codename% \n \n &fContributors: &7McChicken Team, onn512, pawsashatoy, LWJENNI, HACKERPRO17, liventmst\n &fTranslators: &7initzero, Nagibator6000Lol, DrakesWeb, kogtyv, Senmpai333 \n \n &cMcChicken Studio 2017-2026\n &c"
+
+  # Creative Chat is global chat, accessed by ! in the beginning of message, or with /cc.
+  cc-prefix: "&6 Creative Chat &8| &7"
+
+  # You can use PAPI placeholders and MiniMessage here
+  cc-chat: "%cc-prefix%&7%player%&7: %message%"
+
+  # And you can use PAPI placeholders and MiniMessage here
+  world-chat: "&7 %player% &8» &f%message%"
+
+  # To see messages from other worlds, use /oc spy enable.
+  world-chat-spy: "&8 (%world%) &7%player% &8» &f%message%"
+
+  # Sends notification to player, when they text in local chat in an empty world without other players.
+  notify-no-players-around: true
+
+  # Hides player's messages, when they search world by input; change world's
+  # or module's name, description; enter nickname or id for transferring ownership.
+  cancel-chat-on-confirmation: false
+
+  # Handles player's chat messages.
+  #
+  # If you have own chat managers (ChatControl...), you can set to: false
+  handle-world-chat: true
+
+  # Sends "Oops! An error has occurred..." error messages in console.
+  critical-errors: true
+
+  # Sends "Warning! ..." warning messages in console.
+  warnings: true
+
+  # Sends "Not found message ..." messages in console.
+  not-found: false
+
+  # Sends "[GRIEF: ID] Suspicious changes by Player: ..." messages in console.
+  grief-stats: true
+
+  # Sends "[SIGN: ID] Sign edited by Player: ... (x, y, z)" messages in console.
+  sign-edits: true
+
+  #
+  # List of message paths, that will be not changed
+  # even after /oc resetlocale. Recommended, if you
+  # have some styled cool unique messages.
+  #
+  # To mark message as for saving, use:
+  # /oc ignoremessage path.of.message
+  #
+  # To unmark message, so it can be reset, use:
+  # /oc unignore path.of.message
+  #
+  do-not-reset: # These messages will be not changed, even after /oc resetlocale.
+    - "path.of-the-message"
+    #- "creating-world.welcome"
+
+#
+# List of allowed links, that player can use
+# for specific inputs. Used to avoid bad sites,
+# that can steal player's IP.
+#
+allowed-links:
+  #
+  # For player action: "Set Resource Pack"
+  #
+  resource-pack:
+    - "dropbox.com"
+    - "drive.google.com"
+    - "cdn.modrinth.com"
+
+#
+# Coding is a unique feature of Creative+, that allows
+# players to create games. Sometimes it can be unpredictable!
+#
+# To access coding world, join the world and use:
+# /dev
+#
+# To compile a code, use:
+# /play
+#
+# To stop a code, use:
+# /build
+#
+coding:
+
+  # Enables coding mode.
+  enabled: true
+
+  # Returns previous coding blocks selection menu from older versions.
+  old-selection-menu: false
+
+  # Name of default coding platforms generator, that will be used for all worlds.
+  #
+  # Don't change it, if your server contains already existing worlds!
+  # To test generator, use:
+  # /world platformer [ID]
+  #
+  # horizontal - Generates plots.
+  # vertical - Generates floors.
+  # legacy - Generates floors with visible world border.
+  platforms-generator: "horizontal"
+
+  #
+  # Spacing for platforms generators.
+  #
+  # Don't change it, if your server contains already existing worlds!
+  #
+  platforms-spacing:
+
+    # Y-distance between platforms for vertical generator.
+    vertical: 5
+
+    # Y-distance between platforms for legacy generator.
+    legacy: 10
+
+    # X/Z-distance between platforms for horizontal generator.
+    horizontal: 102
+
+  #
+  # Cuts a side strip in vertical platforms for easier flying between floors.
+  #
+  # Don't change it, if your server contains already existing worlds!
+  #
+  platforms-vertical-notch:
+
+    # Enables notch.
+    enabled: false
+
+    # Width of cut strip from platform edge on X axis.
+    width: 3
+
+  # Cancels sending message to local chat, when player sets new value of text, number, vector,
+  # variable, potion, color while holding item in hand.
+  cancel-chat-on-value-set: false
+
+  # Cancels any action (player, entity, variable, world, control...)
+  # if target entity in action is not in world.
+
+  # By default, it's false to make possible to execute
+  # non-player and non-entity actions, that don't require entity.
+  ignore-actions-if-entity-not-in-world: false
+
+  # Saves copies of codeScript.yml in /plugins/OpenCreative/history/ folder.
+  # Useful, only if you want to detect which script could cause server lags.
+  save-scripts-history: false
+
+  #
+  # You can disable some coding blocks,
+  # if they're useless or harming performance.
+  # disabled-actions:
+  #  - "world_set_block_type"
+  #
+  disabled-events: []
+  disabled-actions: []
+  disabled-conditions: []
+
+  #
+  # Prompt handler is responsible for generating
+  # code from players wishes by using command:
+  # /env make [prompt]
+  #
+  # Notice: Prompter can and will do mistakes in coding,
+  # and we cannot nothing to do with it.
+  #
+  # Prompter requires token to work.
+  # For ChatGPT    - https://platform.openai.com/api-keys
+  # For Gemini     - https://aistudio.google.com/app/apikey
+  # For OpenRouter - https://openrouter.ai/settings/keys
+  # Note: Services give you free trial, but
+  #       for general usage you can be forced
+  #       to pay services for using prompter.
+  #
+  # For example: /env make when player right clicks on
+  #                   magma block it gives random item
+  prompt-handler:
+
+    # Type of AI to use in prompter.
+    #
+    # none - Disable coding prompter.
+    # gemini - Google Gemini.
+    # chatgpt - OpenAI ChatGPT.
+    # openrouter - OpenRouter.
+    type: "none"
+
+    # Specific model of LLM.
+    #
+    # For ChatGPT, use: "gpt-4o-mini"
+    # For Gemini, use "gemini-2.5-flash"
+    # For OpenRouter, use: "google/gemini-2.5-flash"
+    model: "gemini-2.5-flash"
+
+    #
+    # Secret key here, don't share it with anyone!
+    # If you have it here, then DON'T SHARE config.yml with anyone!
+    #
+    token: "insert-secret-api-key-here-but-do-not-share-it-with-others"
+
+    # Maximum time amount for thinking in seconds.
+    timeout: 120
+
+    # Maximum amount of executors.
+    executors-limit: 10
+
+#
+# We want to prevent players from hurting
+# server with some bad items. These items
+# will be edited or entirely removed from
+# player's inventory.
+#
+item-fixer:
+
+  # Enables item fixer.
+  enabled: true
+
+  # Maximum length of item's display name.
+  display-name-max-length: 64
+
+  # Maximum length of lore line in item.
+  lore-line-max-length: 100
+
+  # Maximum lines amount in item.
+  lore-lines-max-amount: 25
+
+  # Maximum enchantment level (swords, armor...)
+  max-enchantment-level: 10
+
+  # Limit of bad items (containers, books) inside container.
+  container-big-items-max-amount: 3
+
+  # Limit of book pages.
+  books-pages-max-amount: 50
+
+  # Removes some attribute modifiers from item (scale, speed, strength).
+  remove-attribute-modifiers: true
+
+  # Removes clickable components from books.
+  remove-clickable-in-books: true
+
+  # Removes custom data in spawn eggs.
+  remove-custom-spawn-eggs: true
+
+  # Removes ender dragon and wither spawn eggs.
+  remove-boss-spawn-eggs: true
+
+  # Maximum length of entity's name.
+  entity-name-max-length: 48
+
+  # Maximum size of persistent data container.
+  persistent-data-max-size: 2048
+
+  # Maximum amount of entities, that blocks (beehives) can hold.
+  entities-max-amount: 3
+
+  # Removes commands inside command block items.
+  clear-command-blocks-data: true
+
+#
+# We want to prevent players from hurting
+# server with some bad scenarios. These scenarios
+# will lead to changing world's behavior.
+#
+world-fixer:
+
+  #
+  # If your server has disabled advancements (spigot.yml, disable-saving: true, disabled: ['*']),
+  # players can't unlock recipes by default. This option allows to unlock all Minecraft crafting recipes.
+  #
+  # none - Don't unlock recipes.
+  # crafting - When player opens crafting table.
+  # join - When player joins the server.
+  #
+  give-all-recipes-on: none
+
+  vehicle-collisions:
+    # Destroys minecarts with too many collisions.
+    enabled: true
+
+    # Maximum amount of collisions in the last 0.5 seconds.
+    max-collisions: 100
+
+  bad-entities-in-air:
+    # Destroys armor stands, vehicles and projectiles, when they're flying next to each other
+    enabled: true
+
+#
+# These commands will be executed on
+# some events. You can add functionality,
+# like sending message with DiscordSRV.
+#
+commands:
+  onLobby: # Event (%player%)
+    first: # Command name
+      command: "" # Command to execute, without slashes /
+      delay: 0 # Delay (in ticks, 1 second = 20 ticks)
+      console: true # true - Execute as console, false - as player
+  onPlanetConnect: {} # %planet% %player%
+  onPlanetDisconnect: {} # %planet% %player%
+  onPlanetCreation: { } # %planet% %player% %generator% %environment% %structures% %seed%
+  onWorldChat: {} # %world% %player% %message% %formatted%
+  onCreativeChat: {} # %player% %message% %formatted%
+  onMaintenanceStart: {} # %player%
+  onMaintenanceEnd: {} # %player%
+
+#
+# If player's input new text will not follow
+# these requirements, then world's setting
+# will be not changed.
+#
+requirements:
+  world-creation:
+    played-seconds: 30
+  world-reputation:
+    creation-seconds: 300
+  world-name:
+    min-length: 4
+    max-length: 30
+  world-description:
+    min-length: 4
+    max-length: 256
+  world-custom-id:
+    pattern: "^[a-zA-Zа-яА-Я0-9_]+$"
+    min-length: 2
+    max-length: 16
+  module-name:
+    min-length: 4
+    max-length: 30
+  module-description:
+    min-length: 4
+    max-length: 256
+
+#
+# Groups are made for specifying players permissions,
+# like world size, world limits, worlds amount.
+#
+groups:
+  default: # default - by default for any player, no permissions required
+    cooldowns: # In seconds
+      generic-command: 5 # /play, /build, /games
+      advertisement: 120 # /ad
+      creative-chat: 10 # /cc
+      world-chat: 2 # chat in the world
+      module-usage: 7 # creating, pasting modules
+      duplication-usage: 7 # duplicating blocks with manipulator
+      world-download: 120 # downloading world with /world download
+      prompter-usage: 60 # generating code with prompter /env make
+    creating-world:
+      limit: 2
+    creating-module:
+      limit: 2
+    lobby-permissions: # Permissions will be given when player teleports to lobby
+      - "music.play"
+    world:
+      size: 128
+      like-reward: 1
+      advertisement-cost: 0
+      coding-prompter: false # Access to /env make command
+      limits:
+        #
+        # Limits for a world, that player created.
+        #
+        executor-calls: 100 # limit of executor calls
+        coding-actions-calls: 500 # limit of actions per 3 seconds.
+        entities-amount: 50 # limit for spawned entities in world
+        modifying-blocks: 5000 # limit for changing blocks with world actions per second
+        redstone-changes: 100 # limit for redstone operations in world
+        repeats-amount: 100 # limit for repeat action per 1 second.
+        opening-inventories: 5 # limit for opening inventories per 5 seconds for preventing anti-exit
+        sending-web-requests: 5 # limit for sending web requests per 5 seconds for preventing attacks
+        variables-amount: 50 # limit for amount of all variables in world (saved, global, local)
+        scoreboards-amount: 5 # limit for amount of all scoreboards
+        bossbars-amount: 5 # limit for amount of all bossbars
+        recipes-amount: 10 # limit for amount of all custom crafting and cooking recipes
+        coding-platforms: 4 # limit for coding platforms
+        changing-list-elements: 50 # limit of changing elements in lists and maps per second
+        changing-targets: 200 # limit of changing targets (setting, adding, removing) with Selection Action
+        builders-amount: 10 # limit of added builders
+        developers-amount: 10 # limit of added developers
+        blacklisted-amount: 10 # limit of banned players
+        whitelisted-amount: 10 # limit of whitelisted players
+        physical-objects: 140 # limit of special physical objects (it's not sand, gravels; they can be spawned with code)
+        selected-lines-amount: 3 # limit of selected lines with manipulator
+        errors-amount: 10 # limit for amount of serious errors per 3 seconds for preventing crashes
+        script-size: 10 # maximum size of script file in megabytes
+      per-player-limit-modifiers:
+        #
+        # When a player joins a world or leaves from world,
+        # this will increase or decrease limits values.
+        #
+        executor-calls: 100
+        coding-actions-calls: 10
+        entities-amount: 50
+        modifying-blocks: 0
+        redstone-changes: 20
+        variables-amount: 50
+        scoreboards-amount: 1
+        repeats-amount: 10
+        changing-list-elements: 10
+        changing-targets: 100
+        bossbars-amount: 1
+        physical-objects: 5
+      build-permissions: # Permissions will be given when player types /build command
+        - "headdb.open"
+        - "worldedit.wand"
+        - "minecraft.debugstick"
+        #- "worldedit.region.set"
+      play-permissions: # Permissions will be given when player types /play command
+        - "headdb.open"
+      dev-permissions: # Permissions will be given when player types /dev command
+        - "headdb.open"
+        - "essentials.itemname"
+        # If you want to deny permission, that player has (maybe he's admin),
+        # just add ! at the beginning of permission node.
+        # - !nte.default
+      visitor-permissions:     # Permissions will be given when player joins the build world (/play, /build),
+        - "essentials.ptime" # but they're not builder/developer/world owner. If player becomes developer/builder
+                             # visitor permissions will be removed from player.
+  premium:
+    permission: "opencreative.group.premium"
+    inherits: "default"
+    cooldowns:
+      generic-command: 3
+      advertisement: 100
+      creative-chat: 4
+      world-chat: 1
+      module-usage: 7
+      duplication-usage: 7
+      world-download: 120
+      prompter-usage: 60
+    creating-world:
+      limit: 4
+    creating-module:
+      limit: 4
+    lobby-permissions:
+      - "music.play"
+    world:
+      size: 256
+      like-reward: 1
+      advertisement-cost: 0
+      coding-prompter: true
+      limits:
+        executor-calls: 120
+        coding-actions-calls: 500
+        entities-amount: 200
+        modifying-blocks: 7500
+        redstone-changes: 200
+        opening-inventories: 5
+        sending-web-requests: 5
+        variables-amount: 500
+        recipes-amount: 10
+        scoreboards-amount: 10
+        bossbars-amount: 10
+        coding-platforms: 4
+        repeats-amount: 100
+        changing-list-elements: 50
+        changing-targets: 200
+        builders-amount: 10
+        developers-amount: 10
+        blacklisted-amount: 10
+        whitelisted-amount: 10
+        physical-objects: 140
+        selected-lines-amount: 3
+        errors-amount: 10
+        script-size: 10
+      per-player-limit-modifiers:
+        executor-calls: 30
+        coding-actions-calls: 10
+        entities-amount: 50
+        modifying-blocks: 0
+        redstone-changes: 20
+        repeats-amount: 10
+        changing-list-elements: 10
+        changing-targets: 100
+        variables-amount: 50
+        scoreboards-amount: 1
+        bossbars-amount: 1
+        physical-objects: 5
+      build-permissions:
+        - "headdb.open"
+        - "worldedit.wand"
+        - "minecraft.debugstick"
+        #- "worldedit.region.set"
+        #- "worldedit.region.replace"
+      play-permissions:
+        - "headdb.open"
+      dev-permissions:
+        - "headdb.open"
+        - "essentials.itemname"
+      visitor-permissions:
+        - "essentials.ptime"
+
+#
+# This section allows you to set custom
+# sounds. If sound is not listed here,
+# build-in sound will be used instead.
+# Themes are useful for special days
+# or holidays.
+#
+# Themes can be changed with:
+# /oc sounds [theme name]
+#
+# To add sound from resource pack use
+# name: "resource_pack_name:sound.id"
+#
+# To disable sound set name of sound to empty text
+# lobby-music:
+#   name: " "
+#
+sounds:
+  #
+  # List of sounds:
+  #
+  # lobby, lobby-music, opencreative, reloading, reloaded, menu-next-page, menu-previous-page, menu-open-world-access,
+  # menu-next-choice, menu-open-generation, menu-open-environment, menu-open-world-settings, menu-open-world-moderation,
+  # menu-open-recommendations, menu-open-own-worlds-browser, menu-open-worlds-browser, menu-open-entities-browser,
+  # menu-open-values-browser, menu-open-confirmation, menu-generation-change, menu-environment-change, menu-entities-browser-sort,
+  # menu-worlds-browser-sort, menu-worlds-browser-category, menu-world-search, menu-generate-structures-change, world-generation,
+  # world-connection, world-connected, world-liked, world-disliked, welcome-to-new-world, world-mode-build, world-mode-dev,
+  # world-now-builder, world-now-developer, world-now-developer-guest, world-kicked, world-banned, player-cancel, player-fail,
+  # player-error, player-teleport, player-respawn, world-code-error, world-code-compile-error, world-code-critical-error,
+  # world-settings-flag-change, world-settings-category-set, world-settings-time-change, world-settings-autosave-on,
+  # world-settings-autosave-off, world-settings-sharing-public, world-settings-sharing-private, world-settings-spawn-teleport,
+  # world-settings-spawn-set, world-settings-owner-set, world-purchase, world-remove-entity, world-teleport-to-entity,
+  # world-teleport-entity-to-me, dev-connected, dev-not-allowed, dev-open-chest, dev-open-barrel, dev-closed-chest,
+  # dev-closed-barrel, dev-set-event, dev-set-action, dev-set-condition, dev-set-target, dev-set-method, dev-set-function,
+  # dev-var-list, dev-platform-color, dev-platform-claim, dev-action-target, dev-action-with-chest, dev-condition-not,
+  # dev-condition-default, dev-cycle-delay-decrease, dev-cycle-delay-increase, dev-cycle-delay-set, dev-cycle-named,
+  # dev-function-named, dev-method-named, dev-variable-parameter, dev-next-parameter, dev-change-category, dev-take-value,
+  # dev-value-set, dev-text-set, dev-number-set, dev-particle-set, dev-variable-set, dev-variable-change, dev-fly-speed-change,
+  # dev-potion-set, dev-location-set, dev-location-teleport, dev-location-teleport-back, dev-event-value-set, dev-vector-set,
+  # dev-boolean-true, dev-boolean-false, dev-move-blocks-right, dev-move-blocks-left, dev-debug-on, dev-debug-off, maintenance-notify,
+  # maintenance-count, maintenance-start, maintenance-end, world-load, world-unload, world-deletion
+  #
+  theme: "default"
+  default:
+    lobby-music:
+      name: "music_disc.creator"
+      pitch: 0.9
+  christmas:
+    lobby-music:
+      name: "music_disc.chirp"
+      pitch: 1.7
+
+#
+# You can turn off world generators
+# and add own custom flats or templates.
+#
+# Custom flats require string in format:
+# "first_block_material,3*second_layer_material;biome_name"
+# Not existing materials will be replaced with air.
+# If height is not specified, it will be 1.
+#
+# Templates can be added in /plugins/OpenCreative/templates/
+# folder. Just move saved folder of your world to this path.
+# Dev worlds with code can be added, if folder's name ends
+# with "dev".
+#
+# When you're changing this, please change in localization
+# files options and item description: menus.world-creation.items.type
+#
+generators:
+
+  # Allows players to generate flat worlds.
+  flat: true
+
+  # Allows players to generate ocean worlds.
+  water: true
+
+  # Allows players to generate empty worlds.
+  empty: true
+
+  # Allows players to generate terrain worlds.
+  survival: true
+
+  # Allows players to generate large biomes worlds (can be bad for server performance!)
+  large-biomes: false
+
+  # Generates flat world starting with Y: 0, instead of Y: -64.
+  generate-flat-higher: false
+
+  custom-flats: {}
+    #desert:
+    #  generation: "bedrock,3*sandstone,sand;plains"
+    #  generate-trees: true
+    #  icon: "SAND"
+  templates: {}
+    #pvp:
+    #  enabled: true
+    #  icon: "DIAMOND_SWORD"
+    #  folder: pvp
+    #  spawn:
+    #    x: 0
+    #    y: 70
+    #    z: 0
+
+#
+# Items are given, when player enters the lobby,
+# joins the world as its owner, teleports to
+# coding world and gets all coding blocks and
+# items. You can change slots and items to give.
+#
+# You can add custom items by specifying them here,
+# or with /oc items set lobby [slot] while holding
+# your item in the main hand.
+#
+# If list will be empty, it will give default prepared items.
+# If you don't want to give any item, then set it like:
+# lobby: "none" or lobby: "nothing" (not recommended and
+# not player-friendly, you have to tell players about commands!)
+#
+items:
+  # Items for lobby.
+  lobby:
+    1: "changelogs" # To return default prepared by our plugin item, without any changes, use this.
+    4: # To return item, prepared by our plugin, but modified by you, use this:
+      #
+      # Type stands for plugin's internal item type,
+      # that contains prepared material (if missing)
+      # and guaranteed translation in localization file.
+      type: "own-worlds"
+      material: "nether_star" # Here you can change material of item.
+    6:
+      type: "worlds"
+      material: "compass"
+    # Example of custom item
+    #9:
+    #  translation: "player-settings" # Translation is a key in localization file
+    #                                 # that you have to write by yourself: name
+    #                                 # and description of item.
+    #                                 # To prevent its removing by /oc resetlocale
+    #                                 # add this path: "items.lobby.[your-item-id]"
+    #                                 # in messages.do-not-reset (above in config) or
+    #                                 # with /oc ignoremessage [path]
+    #  material: "player_head"
+    #10:
+    #  # Or, if you don't want to write translation in localization files,
+    #  # then you can just specify name and lore. It will never disappear.
+    #  name: "&aRanks &3[Right-click]"
+    #  lore:
+    #    - "&7See all available ranks"
+    #    - "&7on our server."
+    #  material: "emerald"
+    #  amount: 1
+    #  glowing: true
+  build-owner:
+    9:
+      type: "world-settings"
+      material: "compass"
+  play-owner:
+    9:
+      type: "world-settings"
+      material: "compass"
+  coding:
+    #
+    # 1: "event-player"
+    # is shorter version of
+    # 1:
+    #  type: "event-player"
+    #
+    1: "event-player"
+    2: "player-action"
+    3: "player-condition"
+    4: "else-condition"
+    8: "coding-book"
+    9: "variables"
+    10: "structure"
+    11: "repeat-action"
+    12: "controller-action"
+    13: "control-action"
+    14: "variable-action"
+    15: "variable-condition"
+    18: "fly-speed-changer"
+    19: "event-world"
+    20: "world-condition"
+    21: "world-action"
+    22: "method"
+    23: "launch-method-action"
+    24: "selection-action"
+    26: "debug-torch"
+    27: "lines-controller"
+    28: "event-entity"
+    29: "entity-condition"
+    30: "entity-action"
+    31: "function"
+    32: "launch-function-action"
+    33: "structure-action"
+    36: "arrow-not"
+  coding-owner:
+    1: "event-player"
+    2: "player-action"
+    3: "player-condition"
+    4: "else-condition"
+    8: "variables"
+    9: "world-settings"
+    10: "structure"
+    11: "repeat-action"
+    12: "controller-action"
+    13: "control-action"
+    14: "variable-action"
+    15: "variable-condition"
+    17: "fly-speed-changer"
+    18: "coding-book"
+    19: "event-world"
+    20: "world-condition"
+    21: "world-action"
+    22: "method"
+    23: "launch-method-action"
+    24: "selection-action"
+    26: "debug-torch"
+    27: "lines-controller"
+    28: "event-entity"
+    29: "entity-condition"
+    30: "entity-action"
+    31: "function"
+    32: "launch-function-action"
+    33: "structure-action"
+    36: "arrow-not"
+
+#
+# Web services can provide additional features,
+# like downloading a world archive.
+#
+web:
+  # Port to use for sharing files.
+  #
+  # It must be OPENED!
+  port: 22912
+
+  # URL, that will be displayed in messages to player.
+  # Example: "yourserver.com"
+  # If empty, will be numeric IP of server and ":port" in the ending.
+  display-link: ""
+
+  #
+  # Downloader allows player to download archive
+  # of world, that contains build and coding world,
+  # with command /world download.
+  #
+  # When player types that command, it will copy world's
+  # folders and compress them into one archive, that will be
+  # stored in /plugins/OpenCreative/temp/ folder.
+  # Then, it sends a link to player, and if player opens the site,
+  # player will download archive, and then it will be removed.
+  # Otherwise, after period of storing time it will be removed.
+  #
+  downloader:
+
+    # Enables world downloader.
+    enabled: false
+
+    # Maximum size of world in MB.
+    max-size: 30
+
+    # How many seconds archive will be stored before deleting.
+    storing-time: 60
+
+#
+# Experiments are unstable experimental features,
+# that are in development, or are made just for fun.
+# Useful for developers and testers of OpenCreative+.
+#
+# Warning: Some experiments can corrupt the worlds!
+# Be careful! Not recommended to enable!
+#
+experiments:
+  # Experiment with player's profiles.
+  wanders: false
+  # Experiment with copying worlds.
+  world_downloader: false
+  # Experiment with downloading a code from site.
+  code_downloader: false
+
+#
+# Watchdog is a system monitor, that checks TPS,
+# RAM and Disk usage and limits loading worlds,
+# when stability is low.
+#
+# Stability has 3 states:
+#  Fine - everything works.
+#  Not Okay - players can join loaded worlds, but can't load worlds or compile code.
+#  Very bad - unloads all worlds, players cannot join worlds.
+#
+# To check status, use: /oc stability
+#
+watchdog:
+  # Enables watchdog.
+  enabled: false
+
+#
+# Maintenance mode unloads all worlds and
+# prevents players without admin permissions
+# from loading or creating worlds.
+#
+# /oc maintenance start 30
+# /oc maintenance end
+#
+maintenance: false
+#
+# In Debug mode OpenCreative+ will send some
+# information about plugin's work and state.
+# Not useful, if you're not developing OC+.
+#
+debug: false
+#
+# The most recent world's ID. It's used
+# to create a new world by adding 1
+# to current value.
+#
+last-world-id: 0 # Recommended to not change.
+
