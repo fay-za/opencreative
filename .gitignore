@@ -1,4 +1,12 @@
 .idea
 dependency-reduced-pom.xml
 opencreative.iml
-target
+target-e 
+# Environment and credential files
+.env
+.env.*
+*.env
+credentials.json
+*.pem
+*.key
+.credentials
