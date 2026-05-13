@@ -99,7 +99,7 @@ commands:
     found: "%prefix%&fГравець &6%player%&f зараз грає у світі: \n&f %planetName%\n &f\n&a &a &n[Натисни, щоб приєднатися]&f\n &f"
     offline: "%prefix%&cГравець зараз не грає у світах."
 modules:
-  help: "%prefix%Модулі це готові рядки блоків кодингу від гравців, які додають різні функції у світ. Їх встановлюють у світі для розробників. Для перегляду використовуйте &6/module&f.\n&6 /module load ID &f- Завантажити модуль за ID"
+  help: "%prefix%Модулі це готові рядки блоків кодингу від гравців, які додають різні функції у світ. Їх встановлюють у світі для розробників. Для перегляду використовуйте &6/module&f.\n&6 /module load ID &f- Завантажити модуль за ID\n&6 /module loadFromURL URL &f- Завантажити модуль за URL (не зберігається)"
   not-found: "%prefix%&cМодуль з ID %id% не знайдено.. O_o"
   private: "%prefix%&cЦей модуль приватний і доступний для встановлення лише творцю модуля.. :("
   created: "%prefix%Ви створили &6модуль&f! Тепер кожен гравець &6може встановити&f ваш створений код. Ви можете змінити назву, опис та значок модуля у списку модулів."
@@ -122,6 +122,13 @@ modules:
   list:
     amount: "%prefix%Список всіх модулів (%amount%):"
     module: "&6%moduleID% &7- %moduleOwner%&7 - &7%moduleName%&f"
+  load-from-url:
+    invalid-url: "%prefix%&cНевірний URL: &7%url%&c. Приймаються лише http(s) посилання."
+    downloading: "%prefix%&fЗавантаження модуля з &6%url%&f..."
+    download-failed: "%prefix%&cНе вдалося завантажити модуль з &7%url%&c: %error%"
+    invalid-format: "%prefix%&cФайл за посиланням &7%url%&c не є дійсним YAML модулем OpenCreative+."
+    place-failed: "%prefix%&cНе вдалося розмістити модуль, завантажений з &7%url%&c."
+    loaded: "%prefix%&fЗавантажено &6%amount% &fрядків кодингу з &6%url%&f. (не збережено як модуль)"
 profiles:
   default-description: "&7Створюю красиві світи!"
   genders:

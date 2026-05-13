@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ua.mcchickenstudio.opencreative.OpenCreative;
 import ua.mcchickenstudio.opencreative.coding.modules.Module;
+import ua.mcchickenstudio.opencreative.coding.modules.ModuleUrlLoader;
 import ua.mcchickenstudio.opencreative.coding.modules.ModulesBrowserMenu;
 import ua.mcchickenstudio.opencreative.planets.DevPlanet;
 import ua.mcchickenstudio.opencreative.settings.Sounds;
@@ -81,6 +82,17 @@ public class ModuleCommand extends CommandHandler {
                     return;
                 }
                 module.place(devPlanet, player);
+            }
+            case "loadfromurl" -> {
+                if (args.length == 1) {
+                    sender.sendMessage(getLocaleMessage("too-few-args"));
+                    return;
+                }
+                if (!canUseCommand(sender, player, devPlanet)) {
+                    return;
+                }
+                if (player == null || devPlanet == null) return;
+                ModuleUrlLoader.loadFromUrl(player, devPlanet, args[1]);
             }
             case "info" -> {
                 if (args.length == 1) {
@@ -224,6 +236,7 @@ public class ModuleCommand extends CommandHandler {
             suggestions.add("dislike");
             if (devPlanet != null) {
                 suggestions.add("load");
+                suggestions.add("loadFromURL");
             }
             if (player.hasPermission("opencreative.modules.delete")) {
                 suggestions.add("delete");
@@ -232,6 +245,9 @@ public class ModuleCommand extends CommandHandler {
                 suggestions.add("list");
             }
         } else if (args.length == 2) {
+            if (args[0].equalsIgnoreCase("loadfromurl")) {
+                return List.of("https://");
+            }
             if (player.hasPermission("opencreative.modules.delete")
                     && args[0].equalsIgnoreCase("delete") || (devPlanet != null
                     && List.of("like", "dislike", "load").contains(args[0].toLowerCase()))) {

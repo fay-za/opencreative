@@ -154,6 +154,7 @@ modules:
   help: |-
     %prefix%Module is prepared coding blocks lines, made by players, that add some features in your world. They can be inserted in developers world. To browse modules use &6/module&f command.
     &6 /module load ID &f- Loads module by specified ID
+    &6 /module loadFromURL URL &f- Downloads a module YAML from a URL and places it (not saved)
   not-found: '%prefix%&cCan''t find module with ID %id% O_o'
   private: '%prefix%&cThis module is private, so only owner can install it.. :('
   created: '%prefix%You created a &6module&f! Every player &6can install&f your selected
@@ -187,6 +188,13 @@ modules:
   list:
     amount: '%prefix%List of all modules (%amount%):'
     module: '&6%moduleID% &7- %moduleOwner%&7 - &7%moduleName%&f'
+  load-from-url:
+    invalid-url: '%prefix%&cInvalid URL: &7%url%&c. Only http(s) URLs are accepted.'
+    downloading: '%prefix%&fDownloading module from &6%url%&f...'
+    download-failed: '%prefix%&cFailed to download module from &7%url%&c: %error%'
+    invalid-format: '%prefix%&cThe file at &7%url%&c is not a valid OpenCreative+ module YAML.'
+    place-failed: '%prefix%&cFailed to place the module downloaded from &7%url%&c.'
+    loaded: '%prefix%&fLoaded &6%amount% &fcoding rows from &6%url%&f. (not saved as a module)'
 environment:
   help: "%prefix%Manage code, variables, and the world for developers.\n \n&6 /env\
     \ variables clear &f- Clear variables\n&6 /env variables size &f- Number of variables\n\
