@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * <h1>ChatTranslationService</h1>
  * Sends a chat message to a set of recipients, auto-translating it
  * into each recipient's preferred language (skipping the sender, and
  * any recipient whose language matches the source).
@@ -65,19 +64,33 @@ public final class ChatTranslationService {
             return;
         }
 
+        boolean enOnlySource = OpenCreative.getPlugin().getConfig()
+                .getBoolean("messages.translation.en-only-source", false);
+        // Forced target language: only meaningful with en-only-source = true.
+        String forcedTarget = OpenCreative.getPlugin().getConfig()
+                .getString("messages.translation.forced-target", "en");
+
         // Always show original to the sender immediately.
         if (recipients.contains(sender)) {
             sender.sendMessage(defaultMessage);
         }
 
         // Group recipients by their target language so we batch translation calls.
+        // Players that opted out (or whose locale equals the forced target in
+        // en-only-source mode and message is already English) get the original.
         Map<String, List<Player>> byLang = new HashMap<>();
+        List<Player> sendOriginal = new ArrayList<>();
         for (Player p : recipients) {
             if (p.getUniqueId().equals(sender.getUniqueId())) continue;
-            String lang = PlayerLocaleResolver.getLanguage(p);
+            if (TranslationPreferences.isOptedOut(p)) {
+                sendOriginal.add(p);
+                continue;
+            }
+            String lang = enOnlySource ? forcedTarget.toLowerCase() : PlayerLocaleResolver.getLanguage(p);
             byLang.computeIfAbsent(lang, k -> new ArrayList<>()).add(p);
         }
 
+        for (Player p : sendOriginal) p.sendMessage(defaultMessage);
         if (byLang.isEmpty()) return;
 
         for (Map.Entry<String, List<Player>> entry : byLang.entrySet()) {
@@ -86,10 +99,17 @@ public final class ChatTranslationService {
 
             GoogleTranslator.translate(rawMessage, targetLang).thenAccept(result -> {
                 Bukkit.getScheduler().runTask(OpenCreative.getPlugin(), () -> {
-                    if (result == null
+                    boolean sameLanguage = result == null
                             || result.translatedText().equalsIgnoreCase(rawMessage)
-                            || PlayerLocaleResolver.sameLanguage(result.sourceLanguage(), targetLang)) {
-                        // Nothing meaningful to translate: send original as-is.
+                            || PlayerLocaleResolver.sameLanguage(result.sourceLanguage(), targetLang);
+
+                    // In en-only-source mode we only translate when the detected
+                    // source language is NOT English; English sources stay as-is.
+                    boolean blockedByEnOnly = enOnlySource
+                            && result != null
+                            && PlayerLocaleResolver.sameLanguage(result.sourceLanguage(), "en");
+
+                    if (sameLanguage || blockedByEnOnly) {
                         for (Player p : group) p.sendMessage(defaultMessage);
                         return;
                     }

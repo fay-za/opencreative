@@ -342,6 +342,7 @@ public final class OpenCreative extends JavaPlugin {
         commands.put("jointo", JoinToCommand.class);
         commands.put("ownworlds", OwnMenuCommand.class);
         commands.put("showoriginal", ShowOriginalCommand.class);
+        commands.put("translate", TranslateCommand.class);
         for (String commandName : commands.keySet()) {
             PluginCommand command =  getCommand(commandName);
             if (command != null) {

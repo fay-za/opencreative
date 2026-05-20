@@ -36,6 +36,15 @@
 5. If Google Translate is unreachable, the dispatch falls back to sending the original message.
 
 ## Next action items
-- (Optional) Add an in-memory LRU translation cache keyed by `(source, target, text)` to avoid re-translating identical chat lines.
-- (Optional) Surface a per-player `/translate toggle` command so individual players can opt out.
 - (Optional) Swap the free endpoint for a paid Google Cloud Translate key if hosting servers hit rate limits.
+
+## Feb 2026 — Follow-up enhancements
+- **LRU translation cache**: new `utils/translation/TranslationCache.java` (bounded LRU of 1 000 entries keyed by `target\0text`). Wired into `GoogleTranslator.translate()` so repeated chat lines skip the HTTP call. Verified deduplication via live calls (miss → hit → miss for new text → miss for new target). Hit/miss counters exposed for ops via `/translate cache`.
+- **`/translate` command** (`commands/TranslateCommand.java`, registered in `plugin.yml` + `OpenCreative.java`):
+  - `/translate toggle` — per-player opt-out (file-backed in `plugins/OpenCreative/translation-opt-out.yml`).
+  - `/translate status` — show current preference.
+  - `/translate cache` — operator-only cache stats.
+  - `/translate clearcache` — operator-only cache reset.
+- **`TranslationPreferences`** persists opted-out UUIDs to a small YAML file (loaded lazily on first access, saved on every toggle).
+- **`en-only-source` mode**: new `messages.translation.en-only-source` (+ `forced-target`) config. When enabled, only messages with a non-English detected source are translated, and every recipient receives the English version regardless of their locale. English sources stay verbatim.
+- `ChatTranslationService.dispatch` now honours opt-outs and the `en-only-source` flag.

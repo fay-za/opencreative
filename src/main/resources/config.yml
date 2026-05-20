@@ -309,6 +309,13 @@ messages:
   # to reveal the untranslated text.
   translation:
     enabled: true
+    # When true, only messages whose detected source language is NOT English
+    # are translated, and every recipient receives the English translation
+    # regardless of their own client locale. Recommended for predominantly
+    # English servers that just want non-English chat to be readable.
+    en-only-source: false
+    # Language code that all recipients receive when en-only-source is true.
+    forced-target: en
     # Button appended after a translated message. Click runs /showoriginal <id>.
     show-original-button: " &8[&7&n[Show Original]&8]"
     # Small tag showing detected source language (uppercase 2-letter code).
@@ -319,6 +326,9 @@ messages:
     original-format: " &8[&7%lang%&8] &7%player%&8: &f%message%"
     # Sent when the original message has been evicted from the cache.
     original-not-found: "&8[&7Original message is no longer available&8]"
+    # Messages printed when a player runs /translate toggle.
+    toggle-on: "&8[&7Translation &agenabled&7 — non-native messages will be auto-translated for you&8]"
+    toggle-off: "&8[&7Translation &cdisabled&7 — you will see messages in their original language&8]"
 
   # To see messages from other worlds, use /oc spy enable.
   world-chat-spy: "&8 (%world%) &7%player% &8» &f%message%"

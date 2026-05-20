@@ -76,6 +76,9 @@ commands:
   showoriginal:
     description: 'Shows the original (untranslated) chat message.'
     aliases: [original, showorig, oc-original]
+  translate:
+    description: 'Toggle chat translation or inspect the translation cache.'
+    aliases: [translation, tr]
   world:
     description: 'Opens world`s settings menu.'
     aliases: [settings, game, іуеештпі, ыуеештпы, setting, цщкдв]

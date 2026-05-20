@@ -52,6 +52,10 @@ public final class GoogleTranslator {
         if (text.isBlank()) {
             return CompletableFuture.completedFuture(null);
         }
+        TranslationResult cached = TranslationCache.get(targetLanguage, text);
+        if (cached != null) {
+            return CompletableFuture.completedFuture(cached);
+        }
         String url = ENDPOINT
                 + "?client=gtx"
                 + "&sl=auto"
@@ -69,7 +73,11 @@ public final class GoogleTranslator {
         return CLIENT.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(response -> {
                     if (response.statusCode() != 200) return null;
-                    return parseResponse(response.body(), targetLanguage);
+                    TranslationResult parsed = parseResponse(response.body(), targetLanguage);
+                    if (parsed != null) {
+                        TranslationCache.put(targetLanguage, text, parsed);
+                    }
+                    return parsed;
                 })
                 .exceptionally(ex -> null);
     }
