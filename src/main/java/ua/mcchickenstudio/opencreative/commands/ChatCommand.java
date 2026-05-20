@@ -36,6 +36,7 @@ import ua.mcchickenstudio.opencreative.OpenCreative;
 import ua.mcchickenstudio.opencreative.events.player.CreativeChatEvent;
 import ua.mcchickenstudio.opencreative.planets.Planet;
 import ua.mcchickenstudio.opencreative.utils.CooldownUtils;
+import ua.mcchickenstudio.opencreative.utils.translation.ChatTranslationService;
 
 import java.util.HashSet;
 import java.util.List;
@@ -161,6 +162,9 @@ public class ChatCommand extends CommandHandler {
                 .replace("%player%", sender.getName())
                 .replace("%cc-prefix%", prefix);
         format = parsePAPI(player, format);
+        // Snapshot of the format with everything resolved except %message% —
+        // used by the translation service to re-render per-recipient.
+        String translatableTemplate = format;
         Component formatted = toComponent(format
                 .replace("%message%", MiniMessage.miniMessage().escapeTags(text)));
         if (formatted.clickEvent() == null) formatted = formatted.clickEvent(ClickEvent.suggestCommand(text));
@@ -171,11 +175,13 @@ public class ChatCommand extends CommandHandler {
         if (event.isCancelled()) return;
 
         formatted = event.getFormattedMessage();
+        java.util.List<Player> recipients = new java.util.ArrayList<>();
         for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            if (!(creativeChatOff.contains(onlinePlayer))) {
-                onlinePlayer.sendMessage(formatted);
+            if (!creativeChatOff.contains(onlinePlayer)) {
+                recipients.add(onlinePlayer);
             }
         }
+        ChatTranslationService.dispatch(player, text, translatableTemplate, recipients, formatted);
     }
 
     @Override
