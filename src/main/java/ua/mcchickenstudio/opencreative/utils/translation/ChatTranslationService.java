@@ -18,6 +18,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import ua.mcchickenstudio.opencreative.OpenCreative;
+import ua.mcchickenstudio.opencreative.utils.MessageUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -133,7 +134,10 @@ public final class ChatTranslationService {
                                                           @NotNull TranslationResult result,
                                                           @NotNull String formatTemplate,
                                                           @NotNull UUID id) {
-        String mainFormatted = formatTemplate
+        // Resolve PlaceholderAPI placeholders (e.g. %player_prefix%) first, then
+        // substitute our own %player% / %message% tokens. Order matters because
+        // the player's name/message may legitimately contain '%'.
+        String mainFormatted = MessageUtils.parsePAPI(sender, formatTemplate)
                 .replace("%player%", sender.getName())
                 .replace("%message%", MiniMessage.miniMessage().escapeTags(result.translatedText()));
         mainFormatted = legacyToMini(mainFormatted);

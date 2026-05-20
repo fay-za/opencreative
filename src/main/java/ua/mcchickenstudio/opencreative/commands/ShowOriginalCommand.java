@@ -61,10 +61,11 @@ public class ShowOriginalCommand extends CommandHandler {
                 "messages.translation.original-format",
                 " <dark_gray>[<gray>%lang%<dark_gray>] <gray>%player%<dark_gray>: <white>%message%"
         );
-        String rendered = legacyToMini(template
-                .replace("%player%", entry.sender())
-                .replace("%lang%", entry.sourceLanguage().toUpperCase())
-                .replace("%message%", MiniMessage.miniMessage().escapeTags(entry.original())));
+        String rendered = legacyToMini(
+                ua.mcchickenstudio.opencreative.utils.MessageUtils.parsePAPI(player, template)
+                        .replace("%player%", entry.sender())
+                        .replace("%lang%", entry.sourceLanguage().toUpperCase())
+                        .replace("%message%", MiniMessage.miniMessage().escapeTags(entry.original())));
         Component out = MiniMessage.miniMessage().deserialize(rendered);
         player.sendMessage(out);
     }
