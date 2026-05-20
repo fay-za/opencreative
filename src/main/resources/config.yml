@@ -317,7 +317,7 @@ messages:
     # Language code that all recipients receive when en-only-source is true.
     forced-target: en
     # Button appended after a translated message. Click runs /showoriginal <id>.
-    show-original-button: " &8[&7&n[Show Original]&8]"
+    show-original-button: " &8[&7&nShow Original&8]"
     # Small tag showing detected source language (uppercase 2-letter code).
     language-tag: " &8[&7%lang%&8]"
     # Hover tooltip for the [Show Original] button.
