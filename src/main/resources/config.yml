@@ -301,6 +301,25 @@ messages:
   # And you can use PAPI placeholders and MiniMessage here
   world-chat: "&7 %player% &8» &f%message%"
 
+  # Auto-translation of chat messages between languages.
+  # When a player sends a message, recipients whose Minecraft client
+  # language differs from the detected source language receive the
+  # message auto-translated via Google Translate. The original is
+  # always shown to the sender, and recipients can click [Show Original]
+  # to reveal the untranslated text.
+  translation:
+    enabled: true
+    # Button appended after a translated message. Click runs /showoriginal <id>.
+    show-original-button: " &8[&7&n[Show Original]&8]"
+    # Small tag showing detected source language (uppercase 2-letter code).
+    language-tag: " &8[&7%lang%&8]"
+    # Hover tooltip for the [Show Original] button.
+    show-original-hover: "&7Click to view the original message"
+    # Format used when /showoriginal renders the source text.
+    original-format: " &8[&7%lang%&8] &7%player%&8: &f%message%"
+    # Sent when the original message has been evicted from the cache.
+    original-not-found: "&8[&7Original message is no longer available&8]"
+
   # To see messages from other worlds, use /oc spy enable.
   world-chat-spy: "&8 (%world%) &7%player% &8» &f%message%"
 

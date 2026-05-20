@@ -73,6 +73,9 @@ commands:
   ownworlds:
     description: 'Opens own worlds browser menu.'
     aliases: [myworlds, mygames, owngames, ьнцщкдвы, ьнпфьуы, ьнпфьуі, ьнцщкдві, щцтцщкдві, щцтцщкдвы]
+  showoriginal:
+    description: 'Shows the original (untranslated) chat message.'
+    aliases: [original, showorig, oc-original]
   world:
     description: 'Opens world`s settings menu.'
     aliases: [settings, game, іуеештпі, ыуеештпы, setting, цщкдв]

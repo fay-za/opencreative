@@ -51,6 +51,7 @@ import ua.mcchickenstudio.opencreative.settings.Sounds;
 import ua.mcchickenstudio.opencreative.settings.items.ItemsGroup;
 import ua.mcchickenstudio.opencreative.utils.CooldownUtils;
 import ua.mcchickenstudio.opencreative.utils.PlayerConfirmation;
+import ua.mcchickenstudio.opencreative.utils.translation.ChatTranslationService;
 import ua.mcchickenstudio.opencreative.utils.world.WorldUtils;
 
 import java.time.Duration;
@@ -194,14 +195,13 @@ public final class ChatListener implements Listener {
                     DevPlanet devPlanet = OpenCreative.getPlanetsManager().getDevPlanet(player);
                     if (devPlanet != null) {
                         // If player in dev world
-                        for (Player p : devPlanet.getWorld().getPlayers()) {
-                            p.sendMessage(finalMessage);
-                        }
+                        java.util.Set<Player> recipients = new java.util.LinkedHashSet<>(devPlanet.getWorld().getPlayers());
                         for (Player p : planet.getTerritory().getWorld().getPlayers()) {
                             if (planet.getWorldPlayers().canDevelop(p)) {
-                                p.sendMessage(finalMessage);
+                                recipients.add(p);
                             }
                         }
+                        ChatTranslationService.dispatch(player, message, format, recipients, finalMessage);
                         sendLocalChatForSpying(player, message, planet);
                         OpenCreative.getPlugin().getLogger().info("[WORLD-CHAT: " + planet.getId() + "dev] " + player.getName() + ": " + message);
                     } else {
@@ -215,9 +215,7 @@ public final class ChatListener implements Listener {
                             player.sendMessage(getPlayerLocaleComponent("chat-no-near-players", player)
                                     .clickEvent(ClickEvent.suggestCommand("!" + message)));
                         }
-                        for (Player p : planet.getPlayers()) {
-                            p.sendMessage(finalMessage);
-                        }
+                        ChatTranslationService.dispatch(player, message, format, planet.getPlayers(), finalMessage);
                         sendLocalChatForSpying(player, message, planet);
                         OpenCreative.getPlugin().getLogger().info("[WORLD-CHAT: " + planet.getId() + "] " + player.getName() + ": " + message);
                     }
@@ -226,9 +224,7 @@ public final class ChatListener implements Listener {
                         player.sendMessage(getPlayerLocaleComponent("chat-no-near-players", player)
                                 .clickEvent(ClickEvent.suggestCommand("!" + message)));
                     }
-                    for (Player p : player.getWorld().getPlayers()) {
-                        p.sendMessage(finalMessage);
-                    }
+                    ChatTranslationService.dispatch(player, message, format, player.getWorld().getPlayers(), finalMessage);
                     sendLocalChatForSpying(player, message, planet);
                     OpenCreative.getPlugin().getLogger().info("[WORLD-CHAT: " + player.getWorld().getName() + "] " + player.getName() + ": " + message);
                 }
